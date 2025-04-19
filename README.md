@@ -2,19 +2,40 @@
 
 # MCP Reddit Companion
 
-A Reddit companion tool built with MCP that allows you to read custom feeds and post comments.
+An MCP tool that enables natural language interaction with your personal Reddit experience. Create custom curated feeds on Reddit and use your favorite LLM client to analyze, summarize, and engage with content that matters to you.
 
-## Features
+## Example LLM Commands
 
-- Read posts from custom feeds (multireddits)
-- View comments from specific posts
-- Read posts from all custom feeds at once
+Here are some example commands you can use with your LLM client:
+
+```python
+# Basic Feed Interaction
+"Show me the latest posts from my 'tech-news' feed"
+"Summarize the top posts from my 'science' feed"
+"What are the trending topics in my 'programming' feed?"
+
+# Content Analysis
+"What are the common themes in my 'ai' feed?"
+"Which of my recent posts got the most engagement?"
+"Summarize the discussions in my 'philosophy' feed"
+
+# Personal Activity
+"Show me my recent Reddit activity"
+"What comments have I received on my posts?"
+"Are there any unread messages in my inbox?"
+
+# Engagement Tracking
+"How are my recent posts performing?"
+"Show me the most active discussions in my feeds"
+"What posts got the most comments in my 'news' feed?"
+```
 
 ## Prerequisites
 
 - Python 3.11+
 - Reddit API credentials (client ID, client secret, username, password)
 - Docker (optional, for containerized deployment)
+- An MCP-compatible LLM client (like Cursor)
 
 ## Installation
 
@@ -80,25 +101,16 @@ docker run \
 uv run mcp dev src/mcp_reddit_companion/server.py
 ```
 
-2. Use the available tools:
-- Get posts from a custom feed:
-```python
-get_custom_feed("feed_name", limit=5)
-```
+or 
 
-- Get comments from a post:
-```python
-get_post_comments("post_id", limit=10)
-```
-
-- Get posts from all custom feeds:
-```python
-read_custom_feeds(limit_per_feed=5)
+2. Install in Claude Desktop
+```bash
+uv run mcp install src/mcp_reddit_companion/server.py 
 ```
 
 ### Docker Usage
 
-The MCP server will start automatically when the container runs. You can interact with it through your MCP client.
+The MCP server will start automatically when the container runs. Connect your LLM client to interact with your Reddit feeds.
 
 ## Configuration
 
