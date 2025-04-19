@@ -1,3 +1,5 @@
+[![smithery badge](https://smithery.ai/badge/@saginawj/mcp-reddit-companion)](https://smithery.ai/server/@saginawj/mcp-reddit-companion)
+
 # MCP Reddit Companion
 
 A Reddit companion tool built with MCP that allows you to read custom feeds and post comments.
