@@ -1,0 +1,13 @@
+[project]
+name = "mcp-reddit"
+version = "0.1.0"
+description = "A Reddit client using PRAW"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastmcp>=2.2.0",
+    "mcp[cli]>=1.6.0",
+    "praw>=7.7.1",
+    "python-dotenv>=1.0.0",
+    "rich>=13.7.0",
+]
