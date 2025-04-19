@@ -1,0 +1,33 @@
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - redditClientId
+      - redditClientSecret
+      - redditUsername
+      - redditPassword
+    properties:
+      redditClientId:
+        type: string
+        description: The client ID for the Reddit API
+      redditClientSecret:
+        type: string
+        description: The client secret for the Reddit API
+      redditUsername:
+        type: string
+        description: The Reddit username for authentication
+      redditPassword:
+        type: string
+        description: The Reddit password for authentication
+  commandFunction: |
+    (config) => ({
+      command: "python",
+      args: ["-m", "src.mcp_reddit_companion.server"],
+      env: {
+        REDDIT_CLIENT_ID: config.redditClientId,
+        REDDIT_CLIENT_SECRET: config.redditClientSecret,
+        REDDIT_USERNAME: config.redditUsername,
+        REDDIT_PASSWORD: config.redditPassword
+      }
+    }) 

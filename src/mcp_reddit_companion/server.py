@@ -110,6 +110,56 @@ async def get_post_comments(post_id: str, limit: int = 10) -> str:
         logging.error(f"An error occurred: {str(e)}")
         return f"An error occurred: {str(e)}"
 
+@mcp.tool()
+def read_custom_feeds(limit_per_feed: int = 5) -> str:
+    """
+    Get posts from all custom feeds (multireddits)
+    
+    Args:
+        limit_per_feed: Number of posts to fetch from each feed (default: 5)
+        
+    Returns:
+        Human readable string containing posts from all custom feeds
+    """
+    try:
+        global client
+        if client is None:
+            client = praw.Reddit(
+                client_id=os.getenv("REDDIT_CLIENT_ID"),
+                client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
+                username=os.getenv("REDDIT_USERNAME"),
+                password=os.getenv("REDDIT_PASSWORD"),
+                user_agent="mcp-reddit/0.1.0"
+            )
+
+        all_posts = []
+        # Get all multireddits
+        for multireddit in client.user.me().multireddits():
+            feed_name = multireddit.name
+            all_posts.append(f"\n=== Posts from feed: {feed_name} ===\n")
+            
+            # Get posts from this feed
+            for submission in multireddit.hot(limit=limit_per_feed):
+                post_info = (
+                    f"Title: {submission.title}\n"
+                    f"Subreddit: r/{submission.subreddit.display_name}\n"
+                    f"Score: {submission.score}\n"
+                    f"Author: {submission.author}\n"
+                    f"URL: {submission.url}\n"
+                    f"Link: https://reddit.com{submission.permalink}\n"
+                    f"---"
+                )
+                all_posts.append(post_info)
+
+        if not all_posts:
+            return "No custom feeds found"
+
+        return "\n".join(all_posts)
+
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}"
+
 def _format_comment(comment, depth: int = 0) -> str:
     """Helper method to recursively format comment tree with proper indentation"""
     indent = "  " * depth
