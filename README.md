@@ -33,7 +33,7 @@ Here are some example commands you can use with your LLM client:
 ## Prerequisites
 
 - Python 3.11+
-- Reddit API credentials (client ID, client secret, username, password)
+- Reddit account credentials (username, password)
 - Docker (optional, for containerized deployment)
 - An MCP-compatible LLM client (like Cursor)
 

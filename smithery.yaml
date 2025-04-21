@@ -25,8 +25,6 @@ startCommand:
       command: "python",
       args: ["-m", "src.mcp_reddit_companion.server"],
       env: {
-        REDDIT_CLIENT_ID: config.redditClientId,
-        REDDIT_CLIENT_SECRET: config.redditClientSecret,
         REDDIT_USERNAME: config.redditUsername,
         REDDIT_PASSWORD: config.redditPassword
       }
