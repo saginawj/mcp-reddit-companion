@@ -165,6 +165,33 @@ def get_unread_messages(username: str, password: str, limit: int = 10) -> str:
         logging.error(f"Error: {str(e)}")
         return f"An error occurred: {str(e)}"
 
+@mcp.tool()
+def get_saved_items(username: str, password: str, limit: int = 10) -> str:
+    client = get_reddit_client(username, password)
+    saved = []
+    for item in client.user.me().saved(limit=limit):
+        if isinstance(item, praw.models.Submission):
+            saved.append(f"[Post] {item.title} (r/{item.subreddit}) — {item.url}")
+        elif isinstance(item, praw.models.Comment):
+            saved.append(f"[Comment] in r/{item.subreddit} — {item.body[:100]}")
+    return "\n".join(saved) if saved else "No saved items found."
+
+@mcp.tool()
+def get_subscribed_subreddits(username: str, password: str, limit: int = 20) -> str:
+    client = get_reddit_client(username, password)
+    return "\n".join(
+        f"r/{sub.display_name} — {sub.title}" 
+        for sub in client.user.subreddits(limit=limit)
+    )
+
+@mcp.tool()
+def get_upvoted(username: str, password: str, limit: int = 10) -> str:
+    client = get_reddit_client(username, password)
+    return "\n".join(
+        f"{item.title} (r/{item.subreddit}) — {item.url}"
+        for item in client.user.me().upvoted(limit=limit)
+    )
+
 # === Helpers ===
 
 def format_submission(submission) -> str:
