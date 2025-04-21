@@ -15,21 +15,21 @@ logging.getLogger().setLevel(logging.WARNING)
 mcp = FastMCP("Reddit MCP")
 
 # === Client Helper ===
-def get_reddit_client(username: str, password: str) -> praw.Reddit:
+def get_reddit_client(username: Optional[str] = None, password: Optional[str] = None) -> praw.Reddit:
     return praw.Reddit(
         client_id=os.getenv("REDDIT_CLIENT_ID"),
         client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
-        username=username,
-        password=password,
+        username=username or os.getenv("REDDIT_USERNAME"),
+        password=password or os.getenv("REDDIT_PASSWORD"),
         user_agent="mcp-reddit/0.1.0"
     )
 
 # === Tools ===
 
 @mcp.tool()
-async def get_custom_feed(username: str, password: str, feed_name: str, limit: int = 10) -> str:
+async def get_custom_feed(feed_name: str, limit: int = 10) -> str:
     try:
-        client = get_reddit_client(username, password)
+        client = get_reddit_client()
         posts = []
         for multireddit in client.user.me().multireddits():
             if multireddit.name == feed_name:
@@ -44,9 +44,9 @@ async def get_custom_feed(username: str, password: str, feed_name: str, limit: i
         return f"An error occurred: {str(e)}"
 
 @mcp.tool()
-async def get_post_comments(username: str, password: str, post_id: str, limit: int = 10) -> str:
+async def get_post_comments(post_id: str, limit: int = 10) -> str:
     try:
-        client = get_reddit_client(username, password)
+        client = get_reddit_client()
         submission = client.submission(id=post_id)
         submission.comments.replace_more(limit=0)
         content = format_submission(submission)
@@ -61,9 +61,9 @@ async def get_post_comments(username: str, password: str, post_id: str, limit: i
         return f"An error occurred: {str(e)}"
 
 @mcp.tool()
-def read_custom_feeds(username: str, password: str) -> str:
+def read_custom_feeds() -> str:
     try:
-        client = get_reddit_client(username, password)
+        client = get_reddit_client()
         all_posts = []
         for multireddit in client.user.me().multireddits():
             all_posts.append(f"\n=== Posts from feed: {multireddit.name} ===\n")
@@ -75,9 +75,9 @@ def read_custom_feeds(username: str, password: str) -> str:
         return f"An error occurred: {str(e)}"
 
 @mcp.tool()
-def read_new_posts(username: str, password: str, limit: int = 20) -> str:
+def read_new_posts(limit: int = 20) -> str:
     try:
-        client = get_reddit_client(username, password)
+        client = get_reddit_client()
         posts = [f"\n=== Latest Posts ===\n"]
         for submission in client.subreddit("all").new(limit=limit):
             posts.append(format_submission(submission))
@@ -87,9 +87,9 @@ def read_new_posts(username: str, password: str, limit: int = 20) -> str:
         return f"An error occurred: {str(e)}"
 
 @mcp.tool()
-def get_user_activity(username: str, password: str, limit: int = 20) -> str:
+def get_user_activity(limit: int = 20) -> str:
     try:
-        client = get_reddit_client(username, password)
+        client = get_reddit_client()
         activity = ["\n=== Your Recent Activity ===\n\nRecent Posts:\n"]
         for submission in client.user.me().submissions.new(limit=limit // 2):
             activity.append(format_submission(submission))
@@ -107,9 +107,9 @@ def get_user_activity(username: str, password: str, limit: int = 20) -> str:
         return f"An error occurred: {str(e)}"
 
 @mcp.tool()
-def get_post_engagement(username: str, password: str, post_id: Optional[str] = None, limit: int = 5) -> str:
+def get_post_engagement(post_id: Optional[str] = None, limit: int = 5) -> str:
     try:
-        client = get_reddit_client(username, password)
+        client = get_reddit_client()
         if post_id:
             submission = client.submission(id=post_id)
             submission.comments.replace_more(limit=0)
@@ -148,9 +148,9 @@ def get_post_engagement(username: str, password: str, post_id: Optional[str] = N
         return f"An error occurred: {str(e)}"
 
 @mcp.tool()
-def get_unread_messages(username: str, password: str, limit: int = 10) -> str:
+def get_unread_messages(limit: int = 10) -> str:
     try:
-        client = get_reddit_client(username, password)
+        client = get_reddit_client()
         messages = ["\n=== Unread Messages ===\n"]
         for message in client.inbox.unread(limit=limit):
             messages.append(
@@ -166,8 +166,8 @@ def get_unread_messages(username: str, password: str, limit: int = 10) -> str:
         return f"An error occurred: {str(e)}"
 
 @mcp.tool()
-def get_saved_items(username: str, password: str, limit: int = 10) -> str:
-    client = get_reddit_client(username, password)
+def get_saved_items(limit: int = 10) -> str:
+    client = get_reddit_client()
     saved = []
     for item in client.user.me().saved(limit=limit):
         if isinstance(item, praw.models.Submission):
@@ -177,16 +177,16 @@ def get_saved_items(username: str, password: str, limit: int = 10) -> str:
     return "\n".join(saved) if saved else "No saved items found."
 
 @mcp.tool()
-def get_subscribed_subreddits(username: str, password: str, limit: int = 20) -> str:
-    client = get_reddit_client(username, password)
+def get_subscribed_subreddits(limit: int = 20) -> str:
+    client = get_reddit_client()
     return "\n".join(
         f"r/{sub.display_name} — {sub.title}" 
         for sub in client.user.subreddits(limit=limit)
     )
 
 @mcp.tool()
-def get_upvoted(username: str, password: str, limit: int = 10) -> str:
-    client = get_reddit_client(username, password)
+def get_upvoted(limit: int = 10) -> str:
+    client = get_reddit_client()
     return "\n".join(
         f"{item.title} (r/{item.subreddit}) — {item.url}"
         for item in client.user.me().upvoted(limit=limit)
