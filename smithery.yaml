@@ -5,8 +5,7 @@ startCommand:
     required:
       - redditClientId
       - redditClientSecret
-      - redditUsername
-      - redditPassword
+      - redditRefreshToken
     properties:
       redditClientId:
         type: string
@@ -14,12 +13,9 @@ startCommand:
       redditClientSecret:
         type: string
         description: The client secret for the Reddit API
-      redditUsername:
+      redditRefreshToken:
         type: string
-        description: The Reddit username for authentication
-      redditPassword:
-        type: string
-        description: The Reddit password for authentication
+        description: The Reddit refresh token for authentication
   commandFunction: |
     (config) => ({
       command: "python",
@@ -27,7 +23,6 @@ startCommand:
       env: {
         REDDIT_CLIENT_ID: config.redditClientId,
         REDDIT_CLIENT_SECRET: config.redditClientSecret,
-        REDDIT_USERNAME: config.redditUsername,
-        REDDIT_PASSWORD: config.redditPassword
+        REDDIT_REFRESH_TOKEN: config.redditRefreshToken
       }
     }) 
