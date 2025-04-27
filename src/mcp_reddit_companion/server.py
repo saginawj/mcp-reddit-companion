@@ -15,13 +15,27 @@ logging.getLogger().setLevel(logging.WARNING)
 mcp = FastMCP("Reddit MCP")
 
 # === Client Helper ===
-def get_reddit_client(username: Optional[str] = None, password: Optional[str] = None) -> praw.Reddit:
+def get_reddit_client() -> praw.Reddit:
+    """
+    Creates an authenticated Reddit client using refresh token only.
+    Login/password is no longer supported.
+    """
+    logger = logging.getLogger(__name__)
+
+    refresh_token = os.getenv("REDDIT_REFRESH_TOKEN")
+    client_id = os.getenv("REDDIT_CLIENT_ID")
+    client_secret = os.getenv("REDDIT_CLIENT_SECRET")
+
+    if not all([refresh_token, client_id, client_secret]):
+        logger.error("❌ Missing required Reddit OAuth credentials.")
+        raise ValueError("REDDIT_REFRESH_TOKEN, CLIENT_ID, and CLIENT_SECRET are all required.")
+
+    logger.info("🔐 Using Reddit OAuth via refresh_token")
     return praw.Reddit(
-        client_id=os.getenv("REDDIT_CLIENT_ID"),
-        client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
-        username=username or os.getenv("REDDIT_USERNAME"),
-        password=password or os.getenv("REDDIT_PASSWORD"),
-        user_agent="mcp-reddit/0.1.0"
+        client_id=client_id,
+        client_secret=client_secret,
+        refresh_token=refresh_token,
+        user_agent="mcp-reddit/0.2.0"
     )
 
 # === Tools ===
