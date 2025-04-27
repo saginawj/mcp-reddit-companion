@@ -9,7 +9,7 @@ from fastmcp import FastMCP
 load_dotenv()
 
 # Set logging level
-logging.getLogger().setLevel(logging.WARNING)
+logging.basicConfig(level=logging.WARNING)
 
 # Initialize MCP server
 mcp = FastMCP("Reddit MCP")
@@ -37,6 +37,32 @@ def get_reddit_client() -> praw.Reddit:
         refresh_token=refresh_token,
         user_agent="mcp-reddit/0.2.0"
     )
+
+# === Helper Functions ===
+
+def format_submission(submission) -> str:
+    """Format Reddit submission data for display."""
+    return (
+        f"Title: {submission.title}\n"
+        f"Subreddit: r/{submission.subreddit.display_name}\n"
+        f"Score: {submission.score}\n"
+        f"Author: {submission.author}\n"
+        f"URL: {submission.url}\n"
+        f"Link: https://reddit.com{submission.permalink}\n---"
+    )
+
+def _format_comment(comment, depth: int = 0) -> str:
+    """Format Reddit comment data for display, including replies."""
+    indent = "  " * depth
+    content = (
+        f"{indent}* Author: {comment.author}\n"
+        f"{indent}  Score: {comment.score}\n"
+        f"{indent}  {comment.body}\n"
+    )
+    for reply in comment.replies:
+        content += _format_comment(reply, depth + 1)
+    return content
+
 
 # === Tools ===
 
@@ -205,29 +231,6 @@ def get_upvoted(limit: int = 10) -> str:
         f"{item.title} (r/{item.subreddit}) — {item.url}"
         for item in client.user.me().upvoted(limit=limit)
     )
-
-# === Helpers ===
-
-def format_submission(submission) -> str:
-    return (
-        f"Title: {submission.title}\n"
-        f"Subreddit: r/{submission.subreddit.display_name}\n"
-        f"Score: {submission.score}\n"
-        f"Author: {submission.author}\n"
-        f"URL: {submission.url}\n"
-        f"Link: https://reddit.com{submission.permalink}\n---"
-    )
-
-def _format_comment(comment, depth: int = 0) -> str:
-    indent = "  " * depth
-    content = (
-        f"{indent}* Author: {comment.author}\n"
-        f"{indent}  Score: {comment.score}\n"
-        f"{indent}  {comment.body}\n"
-    )
-    for reply in comment.replies:
-        content += _format_comment(reply, depth + 1)
-    return content
 
 # === Entry Point ===
 
