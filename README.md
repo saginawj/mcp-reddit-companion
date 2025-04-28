@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/mseep-audited.png)](https://mseep.ai/app/saginawj-mcp-reddit-companion)
+
 [![smithery badge](https://smithery.ai/badge/@saginawj/mcp-reddit-companion)](https://smithery.ai/server/@saginawj/mcp-reddit-companion)
 
 # MCP Reddit Companion
